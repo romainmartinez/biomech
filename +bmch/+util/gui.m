@@ -22,14 +22,18 @@ classdef gui
             self.category = bmch.util.category(current);
             
             self.print_header;
-            fprintf('%s\n', upper(strjoin(buffer, ' > '))) 
+            fprintf('%s\n', upper(strjoin(buffer, ' > ')))
         end % constructor
         
         function answer = display_choice(self)
             for icat = 1:length(self.category)
                 fprintf('[%d] - %s\n', icat,self.category{icat})
             end
-            fprintf('e[x]it | [r]eturn\n')
+            if contains(self.current, 'main')
+                fprintf('e[x]it\n')
+            else
+                fprintf('e[x]it | [r]eturn\n')
+            end
             answer = input('What do you want to do?: ', 's');
             fprintf('\n')
         end

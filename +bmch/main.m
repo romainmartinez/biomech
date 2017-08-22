@@ -17,24 +17,13 @@ classdef main
     methods
         
         function self = main(varargin)
-            % inputs :
-            %   varargin: optionnal argument if you want to debug [integer]
-            
-            if ~nargin
-                self.field = 0;
-            elseif nargin == 1
-                self.field = num2str(varargin{1});
-            else
-                error('Too much arguments (1 optionnal, integer) [bmch warning].')
-            end
-            
+            self.field = 0;
             self.event_loop;
-            
         end % constructor
         
         %-------------------------------------------------------------------------%
         function self = event_loop(self)
-            while self.field ~= 'x'
+            while self.field ~= 'x' % until e[x]it
                 self = self.choose_field;
             end
             self.ui.print_bye
@@ -43,14 +32,17 @@ classdef main
         function self = choose_field(self)
             if self.field == 0
                 current = 'main';
-            elseif isempty(self.buffer)
-                self.ui.category = bmch.util.category('main');
-                current = self.ui.category{str2double(self.field)};
-            else
+            elseif self.field ~= 'r'
                 current = self.ui.category{str2double(self.field)};
             end
             
-            self.buffer = [self.buffer {current}];
+            if self.field == 'r' % [r]eturn
+                current = self.buffer{end-1};
+                self.buffer = {self.buffer{1:end-1}};
+            else
+                self.buffer = [self.buffer {current}];
+            end
+            
             self.ui = bmch.util.gui(current, self.buffer);
             self.field = self.ui.display_choice;
             
