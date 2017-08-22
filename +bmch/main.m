@@ -27,7 +27,7 @@ classdef main
                 error('Too much arguments (1 optionnal, integer) [bmch warning].')
             end
             
-            self.ui = bmch.util.gui;
+            self.ui = bmch.util.gui; % constructor
             self.ui.print_header;
             
             self.event_loop;
@@ -35,14 +35,17 @@ classdef main
         
         %-------------------------------------------------------------------------%
         function self = event_loop(self)
-            self.ui.questions = bmch.util.category('main');
+            
             self.ui.current = 'main';
+            self.ui.category = bmch.util.category(self.ui.current);
+            
             if self.field == 0
                 self.field = self.ui.display_choice;
             end
             
-            fieldi = bmch.util.category(question_main{self.field}, self.field);
-            self.ui.display_choice(fieldi)
+            self.ui.current = self.ui.category{self.field};
+            self.ui.category = bmch.util.category(self.ui.current);
+            self.ui.display_choice;
             
             switch self.field
                 case 1 % pre-processing
