@@ -27,7 +27,7 @@ classdef gui
         
         function answer = display_choice(self)
             for icat = 1:length(self.category)
-                fprintf('[%d] - %s\n', icat,self.category{icat})
+                fprintf('[%d] - %s\n', icat, strrep(self.category{icat}, '_', ' '))
             end
             if contains(self.current, 'main')
                 fprintf('e[x]it\n')

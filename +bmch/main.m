@@ -43,22 +43,13 @@ classdef main
                 self.buffer = [self.buffer {current}];
             end
             
-            self.ui = bmch.util.gui(current, self.buffer);
-            self.field = self.ui.display_choice;
+            if length(self.buffer) < 3 
+                self.ui = bmch.util.gui(current, self.buffer);
+                self.field = self.ui.display_choice;
+            else % if we are in the 3th step, we want to launch the function associated
+               bmch.(self.buffer{2}).(self.buffer{3});
+            end
             
-            %             switch self.field
-            %                 case 1 % pre-processing
-            %                     self.ui.field(self.field)
-            %                     bmch.preproc
-            %                 case 2 % processing
-            %                     bmch.proc
-            %                 case 3 % statistics
-            %                     bmch.stat
-            %                 case 4 % plot
-            %                     bmch.plot
-            %                 otherwise
-            %                     error('invalid field [bmch warning].')
-            %             end
         end
         
     end % methods
