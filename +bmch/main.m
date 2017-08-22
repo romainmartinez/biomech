@@ -37,19 +37,23 @@ classdef main
             end
             
             if self.field == 'r' % [r]eturn
-                current = self.buffer{end-1};
-                self.buffer = {self.buffer{1:end-1}};
+                [self, current] = self.return2previous;
             else
                 self.buffer = [self.buffer {current}];
             end
             
-            if length(self.buffer) < 3 
-                self.ui = bmch.util.gui(current, self.buffer);
-                self.field = self.ui.display_choice;
-            else % if we are in the 3th step, we want to launch the function associated
-               bmch.(self.buffer{2}).(self.buffer{3});
+            if length(self.buffer) == 3
+                bmch.(self.buffer{2}).(self.buffer{3});
+                [self, current] = self.return2previous;
             end
             
+            self.ui = bmch.util.gui(current, self.buffer);
+            self.field = self.ui.display_choice;
+        end
+        
+        function [self, current] = return2previous(self)
+            current = self.buffer{end-1};
+            self.buffer = {self.buffer{1:end-1}};
         end
         
     end % methods
