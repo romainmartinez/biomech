@@ -22,7 +22,8 @@ classdef gui
             self.category = bmch.util.category(current);
             
             self.print_header;
-            fprintf('%s\n', upper(strjoin(buffer, ' > ')))
+            buffer2print = bmch.util.pipe(buffer).upper().strjoin(' > ').strrep('_', ' ');
+            fprintf('%s\n', buffer2print)
         end % constructor
         
         function answer = display_choice(self)
