@@ -35,9 +35,10 @@ classdef main
         
         %-------------------------------------------------------------------------%
         function self = event_loop(self)
-            question_main = bmch.util.category('main');
+            self.ui.questions = bmch.util.category('main');
+            self.ui.current = 'main';
             if self.field == 0
-                self.field = self.ui.display_choice(question_main, 'main');
+                self.field = self.ui.display_choice;
             end
             
             fieldi = bmch.util.category(question_main{self.field}, self.field);

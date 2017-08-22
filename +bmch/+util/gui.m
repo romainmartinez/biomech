@@ -8,7 +8,8 @@ classdef gui
     %}
     
     properties
-        inputs
+        current
+        questions
     end % properties
     
     %-------------------------------------------------------------------------%
@@ -17,17 +18,15 @@ classdef gui
         function self = gui
         end % constructor
         
-        function answer = display_choice(varargin)
+        function answer = display_choice(self, varargin)
             % TODO: input parser here to print both question and current
             % varargin{1}
             % varargin{2}
             
-            if nargin > 1
-                fprintf('%s\n', upper(varargin{1}))
-            end
+            fprintf('%s > \n', upper(self.current))
             
-            for icat = 1:length(questions)
-                fprintf('[%d] - %s\n', icat,questions{icat})
+            for icat = 1:length(self.questions)
+                fprintf('[%d] - %s\n', icat,self.questions{icat})
             end
             fprintf('[%d] - exit\n', icat+1)
             answer = input('What do you want to do?: ');
