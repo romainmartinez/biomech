@@ -43,6 +43,7 @@ classdef gui
     
     %-------------------------------------------------------------------------%
     methods(Static)
+        
         function print_header
             fprintf('%s\n', repmat('-',1,42))
             fprintf('%sBIOMECH. SIGNAL PROCESSING\n', repmat(' ',1,8))
@@ -51,6 +52,24 @@ classdef gui
         
         function print_bye
             fprintf('Done, bye.\n')
+        end
+        
+        function display_warning(type)
+            switch type
+                case 'configuration_files'
+                    warns = {'the bmch folder must be empty'};
+                otherwise
+                    error('please select a listed warning [bmch warning].')
+            end
+            carac = repmat('~',1,6);
+            fprintf('%s WARNINGS %s\n', carac, carac)
+            
+            for iwarn = 1:length(warns)
+                fprintf('%d - %s\n', iwarn, warns{iwarn})
+            end
+            
+            fprintf('%s\n', repmat('~',1,22))
+            
         end
         
     end
