@@ -15,17 +15,22 @@ classdef gui
     %-------------------------------------------------------------------------%
     methods
         
-        function self = gui
+        function self = gui(current, buffer)
+            clc
+            
+            self.current = current;
+            self.category = bmch.util.category(current);
+            
+            self.print_header;
+            fprintf('%s\n', upper(strjoin(buffer, ' > '))) 
         end % constructor
         
-        function answer = display_choice(self, varargin)
-            fprintf('%s > \n', upper(self.current))
-            
+        function answer = display_choice(self)
             for icat = 1:length(self.category)
                 fprintf('[%d] - %s\n', icat,self.category{icat})
             end
-            fprintf('[%d] - exit\n', icat+1)
-            answer = input('What do you want to do?: ');
+            fprintf('e[x]it | [r]eturn\n')
+            answer = input('What do you want to do?: ', 's');
             fprintf('\n')
         end
         
@@ -38,6 +43,10 @@ classdef gui
             fprintf('%sBIOMECH. SIGNAL PROCESSING\n', repmat(' ',1,8))
             fprintf('%s\n', repmat('-',1,42))
         end % print_header
+        
+        function print_bye
+            fprintf('Done, bye.\n')
+        end
         
     end
 end % class
