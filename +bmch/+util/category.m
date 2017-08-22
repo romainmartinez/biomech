@@ -11,6 +11,8 @@ switch varargin{1}
         output = {'preprocessing', 'processing', 'statistics', 'plot'};
     case 'preprocessing'
         output = {'configuration_files', 'model_construction', 'kinematic_reconstruction', 'channels_assignment'};
+        case 'configuration_files'
+            output = {'create new bmch project', 'load existing bmch project'};
     case 'processing'
     case 'statistics'
     case 'plot'
