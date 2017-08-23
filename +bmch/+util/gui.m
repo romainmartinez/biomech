@@ -22,15 +22,15 @@ classdef gui
             self.category = bmch.util.category(current);
             
             self.print_header;
+            
+            % print current category 
             buffer2print = bmch.util.pipe(buffer).upper().strjoin(' > ').strrep('_', ' ');
             fprintf('%s\n', buffer2print)
+            
         end % constructor
         
-        function answer = display_choice(self)
-            for icat = 1:length(self.category)
-                fprintf('[%d] - %s\n', icat, strrep(self.category{icat}, '_', ' '))
-            end
-            
+        function answer = display_choice(self) 
+            % display choices
             cellfun(@(x,y) fprintf('[%d] - %s\n', x, y), num2cell(1:length(self.category)), self.category)
             
             if contains(self.current, 'main')
@@ -66,14 +66,13 @@ classdef gui
                 otherwise
                     error('please select a listed warning [bmch warning].')
             end
-            carac = repmat('~',1,6);
+            carac = repmat('~',1,6); % line
             fprintf('\n%s WARNINGS %s\n', carac, carac)
             
-            for iwarn = 1:length(warns)
-                fprintf('%d - %s\n', iwarn, warns{iwarn})
-            end
-            
-            fprintf('%s\n', repmat('~',1,22))
+            % display warnings
+            cellfun(@(x,y) fprintf('[%d] - %s\n', x, y), num2cell(1:length(warns)), warns);
+
+            fprintf('%s\n', repmat('~',1,22)) % line
             
         end
         

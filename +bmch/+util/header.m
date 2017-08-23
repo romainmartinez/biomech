@@ -1,5 +1,5 @@
 function output = header(varargin)
-% Enter the category you want to display here
+% Enter the header you want to input here
 % Warning: the string ' ' (space) is forbidden, choose '_' instead.
 
 if ~nargin || nargin > 1

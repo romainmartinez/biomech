@@ -1,11 +1,5 @@
 classdef main
-    %{
-%   Description: launcher of the 'BIOMECH' toolbox
-%
-%   author:  Romain Martinez
-%   email:   martinez.staps@gmail.com
-%   website: github.com/romainmartinez
-    %}
+% main launcher of the biomech toolbox.
     
     properties
         field
@@ -58,6 +52,7 @@ classdef main
             
             if length(self.buffer) == 3 && self.field ~= 'r' && self.field ~= 'x'
                 self = self.launcher; % launch specific function
+                self.field = 0;
             end
         end % choose_field
         
