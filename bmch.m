@@ -8,4 +8,4 @@
 
 clear variables; clc; close all
 
-bmch.main(111);
+bmch.main;

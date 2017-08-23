@@ -30,6 +30,9 @@ classdef gui
             for icat = 1:length(self.category)
                 fprintf('[%d] - %s\n', icat, strrep(self.category{icat}, '_', ' '))
             end
+            
+            cellfun(@(x,y) fprintf('[%d] - %s\n', x, y), num2cell(1:length(self.category)), self.category)
+            
             if contains(self.current, 'main')
                 fprintf('e[x]it\n')
             else
@@ -57,12 +60,14 @@ classdef gui
         function display_warning(type)
             switch type
                 case 'configuration_files'
-                    warns = {'the bmch folder must be empty'};
+                    warns = {'the bmch folder must be empty',...
+                        'the following conf files consist of a simple csv file: `participants.csv`, `markers.csv`, `emg.csv`',...
+                        'csv conf files must be comma separated'};
                 otherwise
                     error('please select a listed warning [bmch warning].')
             end
             carac = repmat('~',1,6);
-            fprintf('%s WARNINGS %s\n', carac, carac)
+            fprintf('\n%s WARNINGS %s\n', carac, carac)
             
             for iwarn = 1:length(warns)
                 fprintf('%d - %s\n', iwarn, warns{iwarn})
