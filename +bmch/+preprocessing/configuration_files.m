@@ -1,19 +1,18 @@
-function configuration_files(self)
-% create configurations files.
-% this is the first (necessary) step.
+function configuration_files(main)
+    % create configurations files.
+    % this is the first (necessary) step.
 
 clc
-self.ui.print_header
-fprintf('%s...\n', self.ui.category{str2double(self.field)})
+main.ui.print_header
+fprintf('%s...\n', main.ui.category{str2double(main.field)})
 
 fileID = {'emg', 'markers', 'participants'};
 
-folder = uigetdir(self.ui.category{str2double(self.field)});
+folder = uigetdir(main.ui.category{str2double(main.field)});
 
-switch self.field
+switch main.field
     case '1' % create new bmch project
-        % display warning
-        self.ui.display_warning(self.current)
+        bmch.util.warnings(main.current)
         
         % create folders
         mkdir(folder, 'inputs'); % TODO: if no c3d, txt file with the data path

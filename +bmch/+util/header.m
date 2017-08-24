@@ -8,7 +8,7 @@ end
 
 switch varargin{1}
     case 'participants'
-        output = {'participants_pseudo', 'laterality', 'group', 'mass', 'height', 'date'};
+        output = {'pseudo', 'laterality', 'group', 'mass', 'height', 'date'};
     case 'emg'
         output = {'muscle_id', 'publication_name'};
     case 'markers'
