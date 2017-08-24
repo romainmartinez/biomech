@@ -1,5 +1,5 @@
 classdef main
-% main launcher of the biomech toolbox.
+    % main launcher of the biomech toolbox.
     
     properties
         conf
@@ -14,11 +14,31 @@ classdef main
     methods
         
         function self = main(varargin)
+            % verify that bmch is the current working directory
+            if ~contains(pwd, 'biomech')
+                error('make the biomech package folder your current directory [bmch warning].')
+            end
+            
+            if ~exist('./cache', 'dir')
+                mkdir('./cache')
+            end
+            
+            try
+                % load cache folder
+                load('./cache/cache.mat');
+                % load conf files from cache folder
+                load(sprintf('%s/conf/conf.mat', folder));
+                self.conf = conf;
+            catch
+                self.conf.folder = [];
+            end
+            
             if nargin == 1 % debug mode
                 self.debug = num2str(varargin{1});
             end
             self.field = 0;
             self.event_loop;
+            
         end % constructor
         
         %-------------------------------------------------------------------------%
@@ -42,7 +62,7 @@ classdef main
                 self.buffer = [self.buffer {self.current}];
             end
             
-            self.ui = bmch.util.gui(self.current, self.buffer);
+            self.ui = bmch.util.gui(self.current, self.buffer, self.conf.folder);
             
             if isempty(self.debug)
                 self.field = self.ui.display_choice;
@@ -53,7 +73,7 @@ classdef main
             
             if length(self.buffer) == 3 && self.field ~= 'r' && self.field ~= 'x'
                 self = self.launcher; % launch specific function
-                self.field = 0;
+                bmch.main;
             end
         end % choose_field
         
@@ -67,7 +87,7 @@ classdef main
             self = self.return2previous(2);
             self.ui.category = bmch.util.category(self.current);
         end % launcher
-         
+        
     end % methods
     
 end % class
