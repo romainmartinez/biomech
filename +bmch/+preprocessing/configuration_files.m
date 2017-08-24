@@ -37,7 +37,11 @@ switch self.field
         conf.folder = folder;
         
         % add current folder to cache
+        if ~exist('./cache', 'dir')
+            mkdir('./cache')
+        end
         save('./cache/cache.mat', 'folder')
+        
         
         % save file to conf folder
         save(sprintf('%s/conf/conf.mat', folder), 'conf');
