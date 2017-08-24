@@ -5,6 +5,7 @@ classdef import_files
         main
         dataroot
         datadir
+        participants
     end % properties
     
     %-------------------------------------------------------------------------%
@@ -14,14 +15,11 @@ classdef import_files
             self.main = main;
             bmch.util.warnings('import_files')
             
+            % select participants
+            self.participants = bmch.util.selector(main.conf.participants.pseudo);
+
             % get folder path
-            self.dataroot = self.get_dataroot;
-            
-            % get folder names
-            self.datadir = self.get_datadir(self.dataroot);
-            
-            % verify that all participants have a folder
-            contains(main.conf.participants.pseudo, self.datadir)
+            self.dataroot = self.get_dataroot;   
         end % constructor
         
         %-------------------------------------------------------------------------%
@@ -38,17 +36,6 @@ classdef import_files
                 % data folder is in 'inputs', in the bmch project folder
                 dataroot = sprintf('%s/inputs/', self.main.conf.folder);
             end
-        end
-        
-        function datadir = get_datadir(~, dir_name)
-            %outputs a cell with directory names (as strings), given a certain dir name (string)
-            dd = dir(dir_name);
-            isub = [dd(:).isdir];
-            datadir = {dd(isub).name}';
-            datadir(ismember(datadir,{'.','..'})) = [];
-        end
-        
-        function participants_have_folder()
         end
         
     end % methods
