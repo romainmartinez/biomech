@@ -2,6 +2,7 @@ classdef main
 % main launcher of the biomech toolbox.
     
     properties
+        conf
         field
         ui
         buffer
