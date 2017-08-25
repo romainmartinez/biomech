@@ -63,10 +63,14 @@ classdef import_files
                         d = btkGetMarkers(c);
                     end
                     
-                    % get channels names
+                    % get current channels names
                     fields = fieldnames(d);
                     
-                    bmch.preprocessing.assignC3Dfields(fields, conf, itrial)
+                    % assign c3d channels name
+                    assign = bmch.preprocessing.assignC3Dfields(fields, conf, itrial, ifolder{:});
+                    corrected = assign.export;
+                    % save assignment into conf
+                    assign.save;
                     
                     % close btk object
                     btkCloseAcquisition(c);

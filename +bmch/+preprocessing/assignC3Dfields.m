@@ -8,25 +8,46 @@ classdef assignC3Dfields < handle
         gui    % gui data
         output % correted fieldnames
         idx    % current position (relative to conf number)
+        tosave % save assignment if the gui pop
+        folder % path to data (used to export the assign.mat file)
+        assign % previous assignment
     end
     
     methods
-        function self = assignC3Dfields(fields, conf, trial)
+        function self = assignC3Dfields(fields, conf, trial, folder)
             self.fields = fields;
             self.conf = conf;
             self.trial = trial;
             self.output = {};
             self.idx = 1;
+            self.folder = folder;
+            
+            % try to load an assign.mat file
+            self.assign = self.loadAssign;
             
             % check if conf == fields
-            tocheck = ~ismember(self.conf, self.fields);
+            tocheck = ~ismember(self.assign, self.fields);
             
-            if tocheck
+            if ~tocheck
+                for i = 1:length(self.assign)
+                    self.output{i} = self.fields{strcmp(self.fields, self.assign{i})};
+                end
+            else
                 self.gui = self.createInterface;
                 uiwait(self.gui.f)
+                self.tosave = 1;
             end
             
         end % constructor
+        
+        function assign = loadAssign(self)
+            loadPath = sprintf('%s/assign.mat', self.folder);
+            if ~isempty(dir(loadPath))
+                load(loadPath)
+            else
+                assign = {};
+            end
+        end % loadAssign
         
         function gui = createInterface(self)
             % root figure
@@ -113,6 +134,16 @@ classdef assignC3Dfields < handle
             end
         end % nan
         
+        function output = export(self)
+            output = self.output;
+        end
+        
+        function save(self)
+            assign = vertcat(self.assign, self.output); %#ok<PROP,NASGU>
+            if self.tosave
+                save(sprintf('%s/assign.mat', self.folder), 'assign')
+            end
+        end
+        
     end
-    
 end
