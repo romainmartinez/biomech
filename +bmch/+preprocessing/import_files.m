@@ -4,7 +4,6 @@ classdef import_files
     properties
         main            % main class
         fileio          % fileIO class
-        dataroot        % path to data
         datadir         % folders contening data
         participants    % participants name
         current         % current field (emg, force, etc.)
@@ -23,11 +22,8 @@ classdef import_files
             % select participants
             self.participants = bmch.util.selector(main.conf.participants.pseudo);
             
-            % get folder path
-            self.dataroot = self.get_dataroot;
-            
-            % check if there is a folder for each selected participants
-            self.datadir = self.get_datadir(self.dataroot);
+            % get data folders
+            self.datadir = self.get_datadir;
             
             % open data files
             self.open_c3d
@@ -35,7 +31,7 @@ classdef import_files
         end % constructor
         
         %-------------------------------------------------------------------------%
-        function dataroot = get_dataroot(self)
+        function datadir = get_datadir(self)
             istheretxt = dir(sprintf('%s/inputs/*.txt', self.main.conf.folder));
             
             if ~isempty(istheretxt)
@@ -48,23 +44,17 @@ classdef import_files
                 % data folder is in 'inputs', in the bmch project folder
                 dataroot = sprintf('%s/inputs/', self.main.conf.folder);
             end
-        end
-        
-        function datadir = get_datadir(~, dir_name)
-            %outputs a cell with directory names (as strings), given a certain dir name (string)
-            dd = dir(dir_name);
-            isub = [dd(:).isdir];
-            datadir = {dd(isub).name}';
-            datadir(ismember(datadir,{'.','..'})) = [];
+            % folders contening data
+            datadir = cellfun(@(x) sprintf('%s%s', dataroot, x), self.participants, 'UniformOutput', false);
         end
         
         function open_c3d(self)
-            % get all data folders
-            folders = cellfun(@(x) sprintf('%s%s', self.dataroot, x), self.datadir, 'UniformOutput', false);
             % fileIO class object
-            self.fileio = bmch.util.fileIO(self.current, folders);
+            self.fileio = bmch.util.fileIO(self.current, self.datadir);
+            % get the current conf file (only first column)
+            conf = table2cell(self.main.conf.(self.current{:})(:,1));
             % open c3d files
-            self.fileio.openc3d
+            self.fileio.openc3d(conf)
         end
         
     end % methods
