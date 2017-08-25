@@ -3,10 +3,9 @@ classdef import_files
     
     properties
         main            % main class
-        fileio          % fileIO class
+        current         % current field (emg, force, etc.)
         datadir         % folders contening data
         participants    % participants name
-        current         % current field (emg, force, etc.)
     end % properties
     
     %-------------------------------------------------------------------------%
@@ -49,12 +48,30 @@ classdef import_files
         end
         
         function open_c3d(self)
-            % fileIO class object
-            self.fileio = bmch.util.fileIO(self.current, self.datadir);
-            % get the current conf file (only first column)
+            % current conf file (only first column)
             conf = table2cell(self.main.conf.(self.current{:})(:,1));
-            % open c3d files
-            self.fileio.openc3d(conf)
+            
+            for ifolder = self.datadir'
+                filenames = dir(sprintf('%s/*.c3d', ifolder{:}));
+                for itrial = {filenames.name}
+                    % open btk object
+                    c = btkReadAcquisition(sprintf('%s/%s', ifolder{:}, itrial{:}));
+                    
+                    if contains(self.current, 'emg') || contains(self.current, 'force')
+                        d = btkGetAnalogs(c);
+                    elseif contains(self.current, 'markers')
+                        d = btkGetMarkers(c);
+                    end
+                    
+                    % get channels names
+                    fields = fieldnames(d);
+                    
+                    bmch.preprocessing.assignC3Dfields(fields, conf, itrial)
+                    
+                    % close btk object
+                    btkCloseAcquisition(c);
+                end
+            end
         end
         
     end % methods
