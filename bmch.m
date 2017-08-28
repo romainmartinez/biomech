@@ -9,3 +9,4 @@
 clear variables; clc; close all
 
 bmch.main(121);
+%btkGetAnalogFrequency

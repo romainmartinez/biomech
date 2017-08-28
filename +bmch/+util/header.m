@@ -8,11 +8,13 @@ end
 
 switch varargin{1}
     case 'participants'
-        output = {'pseudo', 'laterality', 'group', 'mass', 'height', 'date'};
+        output = {'pseudo', 'process', 'laterality', 'group', 'mass', 'height', 'date'};
     case 'emg'
         output = {'muscle_id', 'publication_name'};
     case 'markers'
         output = {'marker_id'};
+    case 'force'
+        output = {'analog_id'};
     otherwise 
         error('invalid argument [bmch warning].')
 end

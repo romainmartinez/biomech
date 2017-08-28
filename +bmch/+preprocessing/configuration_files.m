@@ -6,7 +6,7 @@ clc
 main.ui.print_header
 fprintf('%s...\n', main.ui.category{str2double(main.field)})
 
-fileID = {'emg', 'markers', 'participants'};
+fileID = {'emg', 'markers', 'force', 'participants'};
 
 folder = uigetdir(main.ui.category{str2double(main.field)});
 

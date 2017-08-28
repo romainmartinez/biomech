@@ -19,7 +19,8 @@ classdef import_files
             self.current = main.ui.category(str2double(main.field));
             
             % select participants
-            self.participants = bmch.util.selector(main.conf.participants.pseudo);
+            selected = main.conf.participants.pseudo(main.conf.participants.process == 1);
+            self.participants = bmch.util.selector(selected);
             
             % get data folders
             self.datadir = self.get_datadir;
@@ -53,7 +54,9 @@ classdef import_files
             
             for ifolder = self.datadir'
                 filenames = dir(sprintf('%s/*.c3d', ifolder{:}));
+                fprintf('folder: %s\n', ifolder{:})
                 for itrial = {filenames.name}
+                    fprintf('\ttrial: %s\n', itrial{:});
                     % open btk object
                     c = btkReadAcquisition(sprintf('%s/%s', ifolder{:}, itrial{:}));
                     
@@ -67,7 +70,7 @@ classdef import_files
                     fields = fieldnames(d);
                     
                     % assign c3d channels name
-                    assign = bmch.preprocessing.assignC3Dfields(fields, conf, itrial, ifolder{:});
+                    assign = bmch.preprocessing.assignC3Dfields(self.current, fields, conf, itrial, ifolder{:});
                     corrected = assign.export;
                     % save assignment into conf
                     assign.save;
