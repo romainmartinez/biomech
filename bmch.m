@@ -8,5 +8,6 @@
 % TODO: display current participants & trial & position
 clear variables; clc; close all
 
-bmch.main(121);
-%btkGetAnalogFrequency
+bmch.main(123);
+
+%btkGetAnalogFrequency to conf

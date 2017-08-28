@@ -62,8 +62,10 @@ classdef import_files
                     
                     if contains(self.current, 'emg') || contains(self.current, 'force')
                         d = btkGetAnalogs(c);
+                        freq = btkGetAnalogFrequency(c);
                     elseif contains(self.current, 'markers')
                         d = btkGetMarkers(c);
+                        freq = btkGetPointFrequency(c);
                     end
                     
                     % get current channels names
@@ -73,7 +75,7 @@ classdef import_files
                     assign = bmch.preprocessing.assignC3Dfields(self.current, fields, conf, itrial, ifolder{:});
                     corrected = assign.export;
                     % save assignment into conf
-                    assign.save;
+                    assign.save(freq);
                     
                     % close btk object
                     btkCloseAcquisition(c);

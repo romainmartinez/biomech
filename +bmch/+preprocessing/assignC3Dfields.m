@@ -4,38 +4,38 @@ classdef assignC3Dfields < handle
     properties
         current % current field (emg, force, etc.)
         fields  % current channels associated with the c3d file
-        conf    % target channel names
+        target  % target channel names
         trial   % current trial
+        conf    % configuration file for the current participant
         gui     % gui data
         output  % correted fieldnames
-        idx     % current position (relative to conf number)
+        idx     % current position (relative to target number)
         tosave  % save assignment if the gui pop
         folder  % path to data (used to export the assign.mat file)
-        assign  % previous assignment
     end
     
     methods
-        function self = assignC3Dfields(current, fields, conf, trial, folder)
+        function self = assignC3Dfields(current, fields, target, trial, folder)
             self.current = current;
             self.fields = fields;
-            self.conf = conf;
+            self.target = target;
             self.trial = trial;
             self.output = {};
             self.idx = 1;
             self.folder = folder;
             
             % try to load an assign.mat file
-            self.assign = self.loadAssign;
+            self.conf = self.loadAssign;
             
-            % check if conf == fields
-            check = ismember(self.assign, self.fields);
+            % check if target == fields
+            check = ismember(self.conf.assign.(self.current{:}), self.fields);
             
             % verify if we can find a conf file matching all fields
             checkID = all(check, 2);
             
             if any(checkID) % if there is one file matching
-                for i = 1:length(self.assign(checkID,:))
-                    self.output{i} = self.fields{strcmp(self.fields, self.assign{checkID, i})};
+                for i = 1:length(self.conf.assign.(self.current{:})(checkID,:))
+                    self.output{i} = self.fields{strcmp(self.fields, self.conf.assign.(self.current{:}){checkID, i})};
                 end
             else
                 self.gui = self.createInterface;
@@ -45,19 +45,18 @@ classdef assignC3Dfields < handle
             
         end % constructor
         
-        function output = loadAssign(self)
+        function conf = loadAssign(self)
             loadPath = sprintf('%s/conf.mat', self.folder);
             if ~isempty(dir(loadPath))
-                load(loadPath)
-                
-                if isfield(conf.assign, self.current) %#ok<PROP>
-                    output = conf.assign.(self.current{:}); %#ok<PROP>
-                else % if there is no field associated with the current channel type (emg, etc.)
-                    output = {};
+                load(loadPath, 'conf');
+             
+                if ~isfield(conf.assign, self.current) %#ok<NODEF>
+                    % if there is no field associated with the current channel type (emg, etc.)
+                    conf.assign.(self.current{:}) = {};
                 end
                 
-            else
-                output = {};
+            else % if there is no conf file associated with this participant
+                conf.assign.(self.current{:}) = {};
             end
         end % loadAssign
         
@@ -70,7 +69,7 @@ classdef assignC3Dfields < handle
             
             % panel
             panel = uix.BoxPanel('Parent', gui.f,...
-                'Title', 'channels assignment');
+                'Title', sprintf('%s - channels assignment', self.current{:}));
             
             % hbox
             hbox = uix.HBox('Parent', panel,...
@@ -90,9 +89,9 @@ classdef assignC3Dfields < handle
                 'FontWeight', 'bold',...
                 'String', 'current target:');
             
-            gui.target = uicontrol('Parent', box1,...,
+            gui.targetButton = uicontrol('Parent', box1,...,
                 'Style', 'text',...
-                'String', self.conf{self.idx});
+                'String', self.target{self.idx});
             
             uicontrol('Parent', box1,...
                 'String', 'OK',...
@@ -114,9 +113,9 @@ classdef assignC3Dfields < handle
             set(box2, 'ButtonSize', [150 35], 'Spacing', 5);
             
             % 3) element 3: current assignments
-            gui.conf = uicontrol('Parent', hbox,...
+            gui.target = uicontrol('Parent', hbox,...
                 'Style', 'listbox',...
-                'String', self.conf,...
+                'String', self.target,...
                 'Value', self.idx);
             hbox.Widths = [-2 -1 -1 -1];
         end % createInterface
@@ -137,12 +136,12 @@ classdef assignC3Dfields < handle
             end
             
             % update gui
-            if self.idx > length(self.conf)
+            if self.idx > length(self.target)
                 close all
             else
                 self.gui.fields.String = self.fields;
-                self.gui.target.String = self.conf{self.idx};
-                self.gui.conf.Value = self.idx;
+                self.gui.targetButton.String = self.target{self.idx};
+                self.gui.target.Value = self.idx;
             end
         end % nan
         
@@ -150,9 +149,11 @@ classdef assignC3Dfields < handle
             output = self.output;
         end
         
-        function save(self)
-            conf.assign.(self.current{:}) = vertcat(self.assign, self.output); %#ok<STRNU,PROP>
+        function save(self, freq)
+            conf = self.conf; %#ok<PROPLC>
+            conf.assign.(self.current{:}) = vertcat(self.conf.assign.(self.current{:}), self.output); %#ok<PROPLC>
             if self.tosave
+                conf.freq.(self.current{:}) = freq; %#ok<PROPLC>
                 save(sprintf('%s/conf.mat', self.folder), 'conf')
             end
         end
