@@ -2,19 +2,21 @@ classdef assignC3Dfields < handle
     % GUI designed to assign c3d fields
     
     properties
-        fields % current channels associated with the c3d file
-        conf   % target channel names
-        trial  % current trial
-        gui    % gui data
-        output % correted fieldnames
-        idx    % current position (relative to conf number)
-        tosave % save assignment if the gui pop
-        folder % path to data (used to export the assign.mat file)
-        assign % previous assignment
+        current % current field (emg, force, etc.)
+        fields  % current channels associated with the c3d file
+        conf    % target channel names
+        trial   % current trial
+        gui     % gui data
+        output  % correted fieldnames
+        idx     % current position (relative to conf number)
+        tosave  % save assignment if the gui pop
+        folder  % path to data (used to export the assign.mat file)
+        assign  % previous assignment
     end
     
     methods
-        function self = assignC3Dfields(fields, conf, trial, folder)
+        function self = assignC3Dfields(current, fields, conf, trial, folder)
+            self.current = current;
             self.fields = fields;
             self.conf = conf;
             self.trial = trial;
@@ -26,11 +28,14 @@ classdef assignC3Dfields < handle
             self.assign = self.loadAssign;
             
             % check if conf == fields
-            tocheck = ~ismember(self.assign, self.fields);
+            check = ismember(self.assign, self.fields);
             
-            if ~tocheck
-                for i = 1:length(self.assign)
-                    self.output{i} = self.fields{strcmp(self.fields, self.assign{i})};
+            % verify if we can find a conf file matching all fields
+            checkID = all(check, 2);
+            
+            if any(checkID) % if there is one file matching
+                for i = 1:length(self.assign(checkID,:))
+                    self.output{i} = self.fields{strcmp(self.fields, self.assign{checkID, i})};
                 end
             else
                 self.gui = self.createInterface;
@@ -40,12 +45,19 @@ classdef assignC3Dfields < handle
             
         end % constructor
         
-        function assign = loadAssign(self)
-            loadPath = sprintf('%s/assign.mat', self.folder);
+        function output = loadAssign(self)
+            loadPath = sprintf('%s/conf.mat', self.folder);
             if ~isempty(dir(loadPath))
                 load(loadPath)
+                
+                if isfield(conf.assign, self.current) %#ok<PROP>
+                    output = conf.assign.(self.current{:}); %#ok<PROP>
+                else % if there is no field associated with the current channel type (emg, etc.)
+                    output = {};
+                end
+                
             else
-                assign = {};
+                output = {};
             end
         end % loadAssign
         
@@ -139,9 +151,9 @@ classdef assignC3Dfields < handle
         end
         
         function save(self)
-            assign = vertcat(self.assign, self.output); %#ok<PROP,NASGU>
+            conf.assign.(self.current{:}) = vertcat(self.assign, self.output); %#ok<STRNU,PROP>
             if self.tosave
-                save(sprintf('%s/assign.mat', self.folder), 'assign')
+                save(sprintf('%s/conf.mat', self.folder), 'conf')
             end
         end
         
