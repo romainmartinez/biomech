@@ -5,9 +5,9 @@
     %   email:   martinez.staps@gmail.com
     %   website: github.com/romainmartinez
 %}
-% TODO: display current participants & trial & position
 clear variables; clc; close all
 
-bmch.main(123);
+bmch.main(121);
 
-%btkGetAnalogFrequency to conf
+%% TODO
+% save raw data

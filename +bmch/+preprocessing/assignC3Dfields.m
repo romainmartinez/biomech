@@ -14,6 +14,7 @@ classdef assignC3Dfields < handle
         folder  % path to data (used to export the assign.mat file)
     end
     
+    %-------------------------------------------------------------------------%
     methods
         function self = assignC3Dfields(current, fields, target, trial, folder)
             self.current = current;
@@ -45,11 +46,12 @@ classdef assignC3Dfields < handle
             
         end % constructor
         
+        %-------------------------------------------------------------------------%
         function conf = loadAssign(self)
             loadPath = sprintf('%s/conf.mat', self.folder);
             if ~isempty(dir(loadPath))
                 load(loadPath, 'conf');
-             
+                
                 if ~isfield(conf.assign, self.current) %#ok<NODEF>
                     % if there is no field associated with the current channel type (emg, etc.)
                     conf.assign.(self.current{:}) = {};

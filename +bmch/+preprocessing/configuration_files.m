@@ -27,7 +27,9 @@ switch main.field
         
     case '2' % load existing bmch project
         % load csv conf files ('emg', 'markers', 'participants')
-        conf_files = cellfun(@(x) readtable(sprintf('%s/conf/%s.csv', folder, x)), fileID, 'UniformOutput', false);
+        conf_files = cellfun(@(x) readtable(sprintf('%s/conf/%s.csv', folder, x),...
+            'delimiter', ','),...
+            fileID, 'UniformOutput', false);
         
         % convert to conf.mat file
         conf = cell2struct(conf_files, fileID, 2);
