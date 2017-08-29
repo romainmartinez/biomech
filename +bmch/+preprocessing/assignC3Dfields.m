@@ -28,15 +28,22 @@ classdef assignC3Dfields < handle
             % try to load an assign.mat file
             self.conf = self.loadAssign;
             
+            % find if there is any NaN in previous assignment
+            assign = self.conf.assign.(self.current{:});
+            notNaN = cellfun(@(x) ischar(x), assign);
             % check if target == fields
-            check = ismember(self.conf.assign.(self.current{:}), self.fields);
+            check = ismember(assign(notNaN), self.fields);
             
             % verify if we can find a conf file matching all fields
             checkID = all(check, 2);
             
             if any(checkID) % if there is one file matching
-                for i = 1:length(self.conf.assign.(self.current{:})(checkID,:))
-                    self.output{i} = self.fields{strcmp(self.fields, self.conf.assign.(self.current{:}){checkID, i})};
+                for i = 1:length(assign(checkID,:))
+                    if ismember(i, find(notNaN))
+                        self.output{i} = self.fields{strcmp(self.fields, assign{checkID, i})};
+                    else
+                        self.output{i} = NaN;
+                    end
                 end
             else
                 self.gui = self.createInterface;
@@ -62,6 +69,7 @@ classdef assignC3Dfields < handle
             end
         end % loadAssign
         
+        %-------------------------------------------------------------------------%
         function gui = createInterface(self)
             % root figure
             gui.f = figure('units', 'normalized',...
@@ -122,19 +130,19 @@ classdef assignC3Dfields < handle
             hbox.Widths = [-2 -1 -1 -1];
         end % createInterface
         
+        %-------------------------------------------------------------------------%
         function updateInterface(self, src, ~)
             self.idx = self.idx + 1;
             % get current selection
             current_field = self.fields(self.gui.fields.Value);
-            
-            % delete current selection from gui
-            self.fields(contains(self.fields, current_field)) = [];
             
             % add field in the output
             if contains(src.String, 'NaN')
                 self.output = [self.output nan];
             else
                 self.output = [self.output current_field];
+                % delete current selection from gui
+                self.fields(contains(self.fields, current_field)) = [];
             end
             
             % update gui
@@ -145,12 +153,14 @@ classdef assignC3Dfields < handle
                 self.gui.targetButton.String = self.target{self.idx};
                 self.gui.target.Value = self.idx;
             end
-        end % nan
+        end % updateInterface
         
+        %-------------------------------------------------------------------------%
         function output = export(self)
             output = self.output;
-        end
+        end % export
         
+        %-------------------------------------------------------------------------%
         function save(self, freq)
             conf = self.conf; %#ok<PROPLC>
             conf.assign.(self.current{:}) = vertcat(self.conf.assign.(self.current{:}), self.output); %#ok<PROPLC>
@@ -158,7 +168,7 @@ classdef assignC3Dfields < handle
                 conf.freq.(self.current{:}) = freq; %#ok<PROPLC>
                 save(sprintf('%s/conf.mat', self.folder), 'conf')
             end
-        end
+        end % save
         
     end
 end
