@@ -54,13 +54,22 @@ classdef import_files
         
         %-------------------------------------------------------------------------%
         function openFolder(self, ifolder)
-            % trials in datadir
-            filenames = dir(sprintf('%s/*.c3d', ifolder));
             % print folder
             fprintf('folder: %s\n', ifolder)
+            % trials in datadir
+            filenames = dir(sprintf('%s/raw/*.c3d', ifolder));
+            trialnames = sort({filenames.name});
             % open each trial
-            data = cellfun(@(x) self.openTrial(ifolder, x), {filenames.name}, 'UniformOutput', false);
+            data = cellfun(@(x) self.openTrial(ifolder, x), trialnames, 'UniformOutput', false);
+            
+            % save trialname in conf file
+            load(sprintf('%s/conf.mat', ifolder));
+            conf.trialnames = trialnames; %#ok<STRNU>
+            save(sprintf('%s/conf.mat', ifolder), 'conf');
+            
             % save mat file for each participant
+            save(sprintf('%s/%s.mat', ifolder, self.current{:}), 'data');
+            
         end
         
         %-------------------------------------------------------------------------%
@@ -69,7 +78,7 @@ classdef import_files
             fprintf('\ttrial: %s\n', itrial);
             
             % open btk object
-            c = btkReadAcquisition(sprintf('%s/%s', ifolder, itrial));
+            c = btkReadAcquisition(sprintf('%s/raw/%s', ifolder, itrial));
             
             if contains(self.current, 'emg') || contains(self.current, 'force')
                 d = btkGetAnalogs(c);
