@@ -63,9 +63,11 @@ classdef import_files
                     if contains(self.current, 'emg') || contains(self.current, 'force')
                         d = btkGetAnalogs(c);
                         freq = btkGetAnalogFrequency(c);
+                        lastFrame = btkGetAnalogFrameNumber(c);
                     elseif contains(self.current, 'markers')
                         d = btkGetMarkers(c);
                         freq = btkGetPointFrequency(c);
+                        lastFrame = btkGetLastFrame(c);
                     end
                     
                     % get current channels names
@@ -79,8 +81,27 @@ classdef import_files
                     
                     % close btk object
                     btkCloseAcquisition(c);
+                    
+                    % 3d matrix of the corresponding data
+                    % | emg     | data x muscles x time  |
+                    % | analog  | data x channels x time |
+                    % | markers | axes x markers x time  |
+                    
+                    data.emg = zeros(lastFrame, length(conf));
+                    data.force = zeros(lastFrame, length(conf));
+                    data.M = zeros(3, length(conf), lastFrame);
+                   
+                    % preallocate
+                    data= zeros(lastFrame, length(conf));
+                    % get data
+                    for i = 1:length(corrected)
+                        data(:,i) = d.(corrected{i});
+                    end
                 end
             end
+        end % open_c3d
+        
+        function extract_data(self)
         end
         
     end % methods
