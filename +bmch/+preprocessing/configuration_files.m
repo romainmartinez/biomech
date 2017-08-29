@@ -15,7 +15,7 @@ switch main.field
         bmch.util.warnings(main.current)
         
         % create folders
-        mkdir(folder, 'inputs'); % TODO: if no c3d, txt file with the data path
+        mkdir(folder, 'inputs');
         mkdir(folder, 'outputs');
         mkdir(folder, 'conf');
         

@@ -49,6 +49,7 @@ classdef main
             self.ui.print_bye
         end % event_loop
         
+        %-------------------------------------------------------------------------%
         function self = choose_field(self)
             if self.field == 0
                 self.current = 'main';
@@ -77,11 +78,13 @@ classdef main
             end
         end % choose_field
         
+        %-------------------------------------------------------------------------%
         function self = return2previous(self, nb)
             self.current = self.buffer{end-nb};
             self.buffer = {self.buffer{1:end-nb}};
         end % return2previous
         
+        %-------------------------------------------------------------------------%
         function self = launcher(self)
             bmch.(self.buffer{2}).(self.buffer{3})(self);
             self = self.return2previous(2);

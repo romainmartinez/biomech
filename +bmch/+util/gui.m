@@ -36,6 +36,7 @@ classdef gui
             
         end % constructor
         
+        %-------------------------------------------------------------------------%
         function answer = display_choice(self) 
             % display choices
             cellfun(@(x,y) fprintf('[%d] - %s\n', x, y), num2cell(1:length(self.category)), self.category)
@@ -54,12 +55,14 @@ classdef gui
     %-------------------------------------------------------------------------%
     methods(Static)
         
+        %-------------------------------------------------------------------------%
         function print_header
             fprintf('%s\n', repmat('-',1,42))
             fprintf('%sBIOMECH. SIGNAL PROCESSING\n', repmat(' ',1,8))
             fprintf('%s\n', repmat('-',1,42))
         end % print_header
         
+        %-------------------------------------------------------------------------%
         function print_bye
             fprintf('Done, bye.\n')
         end   
