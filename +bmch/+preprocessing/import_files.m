@@ -6,6 +6,7 @@ classdef import_files
         current         % current field (emg, force, etc.)
         target          % target channel names
         datadir         % folders contening data
+        basePath        % base folder for each participant
         participants    % participants name
     end % properties
     
@@ -28,14 +29,14 @@ classdef import_files
             
             % get data folders
             self.datadir = self.get_datadir;
-            
+
             % open data files
             cellfun(@(x) self.openFolder(x), self.datadir)
             
         end % constructor
         
         %-------------------------------------------------------------------------%
-        function datadir = get_datadir(self)
+        function output = get_datadir(self)
             istheretxt = dir(sprintf('%s/inputs/*.txt', self.main.conf.folder));
             
             if ~isempty(istheretxt)
@@ -49,7 +50,15 @@ classdef import_files
                 dataroot = sprintf('%s/inputs/', self.main.conf.folder);
             end
             % folders contening data
-            datadir = cellfun(@(x) sprintf('%s%s', dataroot, x), self.participants, 'UniformOutput', false);
+            dataDir = cellfun(@(x) sprintf('%s%s/', dataroot, x), self.participants, 'UniformOutput', false);
+            
+            % get folders where current field is recorded
+            f = @(x) x.folder(x.(self.current{:}) == 1);
+            trialType = f(self.main.conf.trials);
+            
+            % get folder containing data for all trial type
+            xi = cellfun(@(x) strcat(dataDir, x), trialType, 'UniformOutput', false);
+            output = reshape([xi{:}], [4,1]);
         end
         
         %-------------------------------------------------------------------------%
@@ -57,19 +66,19 @@ classdef import_files
             % print folder
             fprintf('folder: %s\n', ifolder)
             % trials in datadir
-            filenames = dir(sprintf('%s/raw/*.c3d', ifolder));
+            filenames = dir(sprintf('%s/*.c3d', ifolder));
             trialnames = sort({filenames.name});
             % open each trial
             data = cellfun(@(x) self.openTrial(ifolder, x), trialnames, 'UniformOutput', false);
             
             % save trialname in conf file
+            confPath = self.get_confPath(ifolder);
             load(sprintf('%s/conf.mat', ifolder));
             conf.trialnames = trialnames; %#ok<STRNU>
             save(sprintf('%s/conf.mat', ifolder), 'conf');
             
             % save mat file for each participant
-            save(sprintf('%s/%s.mat', ifolder, self.current{:}), 'data');
-            
+            save(sprintf('%s/%s.mat', ifolder, self.current{:}), 'data'); 
         end
         
         %-------------------------------------------------------------------------%
@@ -78,7 +87,7 @@ classdef import_files
             fprintf('\ttrial: %s\n', itrial);
             
             % open btk object
-            c = btkReadAcquisition(sprintf('%s/raw/%s', ifolder, itrial));
+            c = btkReadAcquisition(sprintf('%s/%s', ifolder, itrial));
             
             if contains(self.current, 'emg') || contains(self.current, 'force')
                 d = btkGetAnalogs(c);
@@ -113,6 +122,11 @@ classdef import_files
                     data(:,i) = NaN;
                 end
             end
+        end
+        
+        %-------------------------------------------------------------------------%
+        function output = get_confPath(~, folder)
+            output = regexprep(folder,'[^/]+(?=/$|$)','');
         end
        
     end % methods

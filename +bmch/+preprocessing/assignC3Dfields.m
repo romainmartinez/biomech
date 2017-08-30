@@ -7,6 +7,7 @@ classdef assignC3Dfields < handle
         target  % target channel names
         trial   % current trial
         conf    % configuration file for the current participant
+        confPath% path to conf file
         gui     % gui data
         output  % correted fieldnames
         idx     % current position (relative to target number)
@@ -24,6 +25,9 @@ classdef assignC3Dfields < handle
             self.output = {};
             self.idx = 1;
             self.folder = folder;
+            
+            % get conf path
+            self.confPath = self.get_confPath;
             
             % try to load an assign.mat file
             self.conf = self.loadAssign;
@@ -54,8 +58,13 @@ classdef assignC3Dfields < handle
         end % constructor
         
         %-------------------------------------------------------------------------%
+        function output = get_confPath(self)
+            output = regexprep(self.folder,'[^/]+(?=/$|$)','');
+        end
+        
+        %-------------------------------------------------------------------------%
         function conf = loadAssign(self)
-            loadPath = sprintf('%s/conf.mat', self.folder);
+            loadPath = sprintf('%sconf.mat', self.confPath);
             if ~isempty(dir(loadPath))
                 load(loadPath, 'conf');
                 
@@ -162,11 +171,14 @@ classdef assignC3Dfields < handle
         
         %-------------------------------------------------------------------------%
         function save(self, freq)
-            conf = self.conf; %#ok<PROPLC>
-            conf.assign.(self.current{:}) = vertcat(self.conf.assign.(self.current{:}), self.output); %#ok<PROPLC>
             if self.tosave
+                conf = self.conf; %#ok<PROPLC>
+                conf.assign.(self.current{:}) = vertcat(self.conf.assign.(self.current{:}), self.output); %#ok<PROPLC>
+                
                 conf.freq.(self.current{:}) = freq; %#ok<PROPLC>
-                save(sprintf('%s/conf.mat', self.folder), 'conf')
+                
+                
+                save(sprintf('%sconf.mat', self.confPath), 'conf')
             end
         end % save
         

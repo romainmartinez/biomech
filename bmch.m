@@ -7,7 +7,7 @@
 %}
 clear variables; clc; close all
 
-bmch.main;
+bmch.main(121);
 
 %% TODO
 % save raw data
