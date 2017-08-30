@@ -118,23 +118,40 @@ classdef import_files
             % close btk object
             btkCloseAcquisition(c);
             
-            % preallocate
-            data = zeros(lastFrame, length(self.target));
-            % get data
-            for i = 1:length(corrected)
-                if ischar(corrected{i})
-                    data(:,i) = d.(corrected{i});
-                else % NaN
-                    data(:,i) = NaN;
-                end
+            switch self.current{:}
+                case 'markers' % 3d matrices
+                    % preallocate
+                    data = zeros(3, length(self.target), lastFrame);
+                    % get data
+                    for i = 1:length(corrected)
+                        if ischar(corrected{i})
+                            data(:, i, :) = reshape(d.(corrected{i}), [3 1 lastFrame]);
+                        else % NaN
+                            data(:, i, :) = NaN;
+                        end
+                    end
+                    
+                otherwise % emg and force (2D matrices)
+                    
+                    % preallocate
+                    data = zeros(lastFrame, length(self.target));
+                    % get data
+                    for i = 1:length(corrected)
+                        if ischar(corrected{i})
+                            data(:,i) = d.(corrected{i});
+                        else % NaN
+                            data(:,i) = NaN;
+                        end
+                    end
             end
+            
         end
         
         %-------------------------------------------------------------------------%
         function output = get_confPath(~, folder)
             output = regexprep(folder,'[^/]+(?=/$|$)','');
         end
-       
+        
     end % methods
     
 end % class
