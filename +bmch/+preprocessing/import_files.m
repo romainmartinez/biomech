@@ -29,7 +29,7 @@ classdef import_files
             % get data folders
             self.datadir = self.get_datadir;
             
-            % open data files
+            % open data files % FOR HERE
             cellfun(@(x) self.openFolder(x), self.datadir)
             
         end % constructor
@@ -59,7 +59,8 @@ classdef import_files
             % trials in datadir
             filenames = dir(sprintf('%s/raw/*.c3d', ifolder));
             trialnames = sort({filenames.name});
-            % open each trial
+            
+            % open each trial % FOR HERE
             data = cellfun(@(x) self.openTrial(ifolder, x), trialnames, 'UniformOutput', false);
             
             % save trialname in conf file
