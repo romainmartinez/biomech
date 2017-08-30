@@ -1,22 +1,21 @@
-function configuration_files(self)
-% create configurations files.
-% this is the first (necessary) step.
+function configuration_files(main)
+    % create configurations files.
+    % this is the first (necessary) step.
 
 clc
-self.ui.print_header
-fprintf('%s...\n', self.ui.category{str2double(self.field)})
+main.ui.print_header
+fprintf('%s...\n', main.ui.category{str2double(main.field)})
 
-fileID = {'emg', 'markers', 'participants'};
+fileID = {'emg', 'markers', 'force', 'participants'};
 
-folder = uigetdir(self.ui.category{str2double(self.field)});
+folder = uigetdir(main.ui.category{str2double(main.field)});
 
-switch self.field
+switch main.field
     case '1' % create new bmch project
-        % display warning
-        self.ui.display_warning(self.current)
+        bmch.util.warnings(main.current)
         
         % create folders
-        mkdir(folder, 'inputs'); % TODO: if no c3d, txt file with the data path
+        mkdir(folder, 'inputs');
         mkdir(folder, 'outputs');
         mkdir(folder, 'conf');
         
@@ -28,7 +27,9 @@ switch self.field
         
     case '2' % load existing bmch project
         % load csv conf files ('emg', 'markers', 'participants')
-        conf_files = cellfun(@(x) readtable(sprintf('%s/conf/%s.csv', folder, x)), fileID, 'UniformOutput', false);
+        conf_files = cellfun(@(x) readtable(sprintf('%s/conf/%s.csv', folder, x),...
+            'delimiter', ','),...
+            fileID, 'UniformOutput', false);
         
         % convert to conf.mat file
         conf = cell2struct(conf_files, fileID, 2);
