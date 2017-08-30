@@ -1,6 +1,5 @@
 function confirmation(varargin)
 % Enter the message you want to display after an event
-% Warning: the string ' ' (space) is forbidden, choose '_' instead.
 
 if ~nargin || nargin > 1
     error('invalid argument (1 required, str) [bmch warning].')

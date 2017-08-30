@@ -1,5 +1,5 @@
+% GUI designed to assign c3d fields
 classdef assignC3Dfields < handle
-    % GUI designed to assign c3d fields
     
     properties
         current % current field (emg, force, etc.)

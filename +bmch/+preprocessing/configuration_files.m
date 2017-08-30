@@ -1,6 +1,6 @@
 function configuration_files(main)
-    % create configurations files.
-    % this is the first (necessary) step.
+% create configurations files.
+% this is the first (necessary) step.
 
 clc
 main.ui.print_header
@@ -49,6 +49,4 @@ switch main.field
         
     otherwise
         error('invalid argument [bmch warning].')
-end
-
 end
