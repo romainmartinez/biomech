@@ -1,6 +1,6 @@
 function output = category(varargin)
-    % Enter the category you want to display here
-    % Warning: the string ' ' (space) is forbidden, choose '_' instead.
+% Enter the category you want to display here
+% Warning: the string ' ' (space) is forbidden, choose '_' instead.
 
 if ~nargin || nargin > 1
     error('invalid argument (1 required, str) [bmch warning].')

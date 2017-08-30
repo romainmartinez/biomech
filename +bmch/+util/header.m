@@ -15,7 +15,7 @@ switch varargin{1}
         output = {'marker_id'};
     case 'force'
         output = {'analog_id'};
-    otherwise 
+    otherwise
         error('invalid argument [bmch warning].')
 end
 

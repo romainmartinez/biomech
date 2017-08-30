@@ -1,20 +1,14 @@
+% Terminal interface of the bmch toolbox
 classdef gui
-    %{
-%   Description: graphical interface
-%
-%   author:  Romain Martinez
-%   email:   martinez.staps@gmail.com
-%   website: github.com/romainmartinez
-    %}
     
     properties
         current
         category
     end % properties
     
-    %-------------------------------------------------------------------------%
     methods
         
+        %-------------------------------------------------------------------------%
         function self = gui(current, buffer, folder)
             clc
             
@@ -26,18 +20,18 @@ classdef gui
             if ~isempty(folder)
                 fprintf('bmch project: ''%s''\n', folder)
             else
-%                 fprintf('no bmch project loaded\n')
+                %                 fprintf('no bmch project loaded\n')
                 bmch.util.warnings('no_project')
             end
             
-            % print current category 
+            % print current category
             buffer2print = bmch.util.pipe(buffer).upper().strjoin(' > ').strrep('_', ' ');
             fprintf('%s\n', buffer2print)
             
         end % constructor
         
         %-------------------------------------------------------------------------%
-        function answer = display_choice(self) 
+        function answer = display_choice(self)
             % display choices
             cellfun(@(x,y) fprintf('[%d] - %s\n', x, y), num2cell(1:length(self.category)), self.category)
             
@@ -52,7 +46,6 @@ classdef gui
         
     end % methods
     
-    %-------------------------------------------------------------------------%
     methods(Static)
         
         %-------------------------------------------------------------------------%
@@ -65,6 +58,6 @@ classdef gui
         %-------------------------------------------------------------------------%
         function print_bye
             fprintf('Done, bye.\n')
-        end   
+        end
     end
 end % class

@@ -1,5 +1,5 @@
+% import c3d files into mat files
 classdef import_files
-    % main launcher of the biomech toolbox.
     
     properties
         main            % main class
@@ -114,7 +114,7 @@ classdef import_files
                 end
             end
         end
-       
+        
     end % methods
     
 end % class
