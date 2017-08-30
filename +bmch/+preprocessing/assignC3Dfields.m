@@ -85,6 +85,8 @@ classdef assignC3Dfields < handle
                 'outerposition', [.25 .25 .5 .8],...
                 'MenuBar', 'none',...
                 'Toolbar', 'none');
+            set(gui.f,'KeyPressFcn',@self.keyStroke);
+            set(gui.f,'windowscrollWheelFcn',@self.scrollWheel);
             
             % panel
             panel = uix.BoxPanel('Parent', gui.f,...
@@ -181,6 +183,27 @@ classdef assignC3Dfields < handle
                 save(sprintf('%sconf.mat', self.confPath), 'conf')
             end
         end % save
+        
+        %-------------------------------------------------------------------------%
+        function keyStroke(self, ~, Event)
+            switch Event.Character
+                case '1'
+                    src.String = 'OK';
+                    self.updateInterface(src)
+                case '2'
+                    src.String = 'NaN';
+                    self.updateInterface(src)
+                otherwise
+                    warning('wrong key stroke (OK [1] or NaN [2])')
+            end
+        end % keyStroke
+        
+                %-------------------------------------------------------------------------%
+        function scrollWheel(self, ~, Event)
+            
+            self.gui.fields.Value = self.gui.fields.Value + Event.VerticalScrollCount;
+            
+        end % keyStroke
         
     end
 end
