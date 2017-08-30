@@ -32,29 +32,27 @@ classdef assignC3Dfields < handle
             % try to load an assign.mat file
             self.conf = self.loadAssign;
             
-            % find if there is any NaN in previous assignment
+            % load assignment for current field
             assign = self.conf.assign.(self.current{:});
-            notNaN = cellfun(@(x) ischar(x), assign);
-            % check if target == fields
-            check = ismember(assign(notNaN), self.fields);
             
-            % verify if we can find a conf file matching all fields
-            checkID = all(check, 2);
+            % get best assignment
+            assign = self.bestAssign(assign);
             
-            if any(checkID) % if there is one file matching
-                for i = 1:length(assign(checkID,:))
-                    if ismember(i, find(notNaN))
-                        self.output{i} = self.fields{strcmp(self.fields, assign{checkID, i})};
+            if isempty(assign)
+                % there is no assigment matching, so pop GUI
+                self.gui = self.createInterface;
+                uiwait(self.gui.f)
+                self.tosave = 1;
+            else
+                % there is a matching
+                for i = 1:length(assign)
+                    if ischar(assign{i})
+                        self.output{i} = self.fields{strcmp(self.fields, assign{i})};
                     else
                         self.output{i} = NaN;
                     end
                 end
-            else
-                self.gui = self.createInterface;
-                uiwait(self.gui.f)
-                self.tosave = 1;
             end
-            
         end % constructor
         
         %-------------------------------------------------------------------------%
@@ -77,6 +75,37 @@ classdef assignC3Dfields < handle
                 conf.assign.(self.current{:}) = {};
             end
         end % loadAssign
+        
+        %-------------------------------------------------------------------------%
+        function output = bestAssign(self, assign)
+            isGood = [];
+            for cellRow = size(assign, 1): -1 : 1
+                % current row
+                row = assign(cellRow, :);
+                % detect NaN
+                notNaN = cellfun(@(x) ischar(x), row);
+                % check if all assignment are in fields
+                check = ismember(row(notNaN), self.fields);
+                
+                isGood(cellRow) = all(check, 2);
+                sumGood(cellRow) = sum(check);
+            end
+            
+            if any(isGood)
+                % if there is conf file(s) matching
+                if sum(isGood) > 1
+                    % take the one with more matching
+                    [~,isGood] = max(sumGood);
+                else
+                    isGood = logical(isGood);
+                end
+                
+                output = assign(isGood,:);
+            else
+                % there is no assigment matching
+                output = [];
+            end
+        end
         
         %-------------------------------------------------------------------------%
         function gui = createInterface(self)
@@ -144,25 +173,34 @@ classdef assignC3Dfields < handle
         %-------------------------------------------------------------------------%
         function updateInterface(self, src, ~)
             self.idx = self.idx + 1;
-            % get current selection
-            current_field = self.fields(self.gui.fields.Value);
             
-            % add field in the output
-            if contains(src.String, 'NaN')
-                self.output = [self.output nan];
-            else
-                self.output = [self.output current_field];
-                % delete current selection from gui
-                self.fields(contains(self.fields, current_field)) = [];
-            end
-            
-            % update gui
-            if self.idx > length(self.target)
+            % if there is no markers, put NaN
+            if isempty(self.fields)
+                nb = length(self.target) - length(self.output);
+                self.output = [self.output repmat({NaN}, 1, nb)];
                 close all
             else
-                self.gui.fields.String = self.fields;
-                self.gui.targetButton.String = self.target{self.idx};
-                self.gui.target.Value = self.idx;
+                
+                % get current selection
+                current_field = self.fields(self.gui.fields.Value);
+                
+                % add field in the output
+                if contains(src.String, 'NaN')
+                    self.output = [self.output nan];
+                else
+                    self.output = [self.output current_field];
+                    % delete current selection from gui
+                    self.fields(strcmp(self.fields, current_field)) = [];
+                end
+                
+                % update gui
+                if self.idx > length(self.target)
+                    close all
+                else
+                    self.gui.fields.String = self.fields;
+                    self.gui.targetButton.String = self.target{self.idx};
+                    self.gui.target.Value = self.idx;
+                end
             end
         end % updateInterface
         
@@ -198,11 +236,17 @@ classdef assignC3Dfields < handle
             end
         end % keyStroke
         
-                %-------------------------------------------------------------------------%
+        %-------------------------------------------------------------------------%
         function scrollWheel(self, ~, Event)
-            
-            self.gui.fields.Value = self.gui.fields.Value + Event.VerticalScrollCount;
-            
+            value = self.gui.fields.Value + Event.VerticalScrollCount;
+            max = length(self.gui.fields.String);
+            if value < 1
+                self.gui.fields.Value = 1;
+            elseif value > max
+                self.gui.fields.Value = max;
+            else
+                self.gui.fields.Value = value;
+            end
         end % keyStroke
         
     end
